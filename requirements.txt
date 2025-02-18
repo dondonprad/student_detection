@@ -9,4 +9,5 @@ dill
 ipython
 deepface
 tensorflow
-#-e .
+ipykernel
+-e .
