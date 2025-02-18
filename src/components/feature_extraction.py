@@ -5,21 +5,13 @@ import math
 import cv2
 import mediapipe as mp
 
-'''
-sys.path.append('home/server-iss-mbkm/project/student_detection/src')
-sys.path.append('home/server-iss-mbkm/project/student_detection/src')
-sys.path.append('home/server-iss-mbkm/project/student_detection/src/components')
-'''
-
 from src.logger import logging
 from src.exception import CustomException
 from src.components.image_crop import ImageCropConfig
-
 from dataclasses import dataclass 
 
 DESIRED_HEIGHT = 480
 DESIRED_WIDTH = 480
-
 
 @dataclass
 class FeatureExtractionConfig():
@@ -31,10 +23,10 @@ class FeatureExtractionConfig():
 class FeatureExtraction():
     def __init__(self):
         self.feature_extraction_config = FeatureExtractionConfig()
-        self.image_crop_config = image_crop.ImageCropConfig()
+        self.image_crop_config = ImageCropConfig()
 
     def images_store(self): #store image to dictionary
-        file_dir = self.image_crop_config #.image_save_path # Specify the directory containing your files
+        file_dir = self.image_crop_config.image_save_path # Specify the directory containing your files
         file_list = [f for f in os.listdir(file_dir) if os.path.isfile(os.path.join(file_dir, f))] # Get a list of all files in the directory
         try:
             logging.info('store images to dictionary')
