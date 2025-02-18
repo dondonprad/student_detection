@@ -10,8 +10,8 @@ from src.exception import CustomException
 from src.components.image_crop import ImageCropConfig
 from dataclasses import dataclass 
 
-DESIRED_HEIGHT = 480
-DESIRED_WIDTH = 480
+#DESIRED_HEIGHT = 480
+#DESIRED_WIDTH = 480
 
 @dataclass
 class FeatureExtractionConfig():
@@ -19,6 +19,7 @@ class FeatureExtractionConfig():
    mp_drawing = mp.solutions.drawing_utils 
    mp_drawing_styles = mp.solutions.drawing_styles
    images = {}
+   landmark = {}
 
 class FeatureExtraction():
     def __init__(self):
@@ -40,7 +41,7 @@ class FeatureExtraction():
                 else: 
                     print(f"Could not load image: {file_path}")
             
-            return self.feature_extraction_config.images.items()
+            #return self.feature_extraction_config.images.items()
 
         except Exception as e:
            raise CustomException(e,sys)
@@ -49,6 +50,27 @@ class FeatureExtraction():
 
     def resize(self, image):
         pass
+
+
+    def draw_get_landmark(self):
+        # Run MediaPipe Pose and draw pose landmarks.
+        try:
+            with self.feature_extraction_config.mp_pose.Pose(static_image_mode=True, min_detection_confidence=0.5, model_complexity=2) as pose:
+                for name, image in self.feature_extraction_config.images.items():
+                    # Convert the BGR image to RGB and process it with MediaPipe Pose.
+                    results = pose.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+                    # Print nose landmark.
+                    image_hight, image_width, _ = image.shape
+                    if not results.pose_landmarks:
+                        continue
+                    print(
+                            f'Nose coordinates: ('
+                            f'{results.pose_landmarks.landmark[self.feature_extraction_config.mp_pose.PoseLandmark.NOSE].x * image_width}, '
+                            f'{results.pose_landmarks.landmark[self.feature_extraction_config.mp_pose.PoseLandmark.NOSE].y * image_hight})'
+                         )
+
+        except:
+            pass
 
 
 if __name__ == '__main__':
