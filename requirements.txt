@@ -5,4 +5,8 @@ opencv-python
 mediapipe
 scikit-learn
 ultralytics==8.3.75
--e .
+dill
+ipython
+deepface
+tensorflow
+#-e .

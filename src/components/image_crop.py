@@ -17,8 +17,6 @@ class ImageCropConfig():
     image_data_path:str = '/home/server-iss-mbkm/project/student_detection_dataset/test.jpg'
     image_save_path:str = '/home/server-iss-mbkm/project/student_detection_dataset/croped_object'
 
-   #image_data_path:str = '/home/server-iss-mbkm/project/student_detection/artifacts/test.jpg'
-   #image_save_path:str = '/home/server-iss-mbkm/project/student_detection/artifacts/croped_object'
     person_yolo_model = YOLO('yolov8n.pt') # Load a pretrained YOLOv8n model
     person_yolo_model.classes = [0] # 0 is the index for the 'person' class in YOLOv8
 
