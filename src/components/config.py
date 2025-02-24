@@ -5,7 +5,7 @@ from dataclasses import dataclass
 DATA_SOURCE_PATH:str = '/home/server-iss-mbkm/project/project_student_detection/student_detection_dataset/raw_object/test.jpg'
 IMAGE_SAVE_PATH:str = '/home/server-iss-mbkm/project/project_student_detection/student_detection_dataset/croped_object'
 IMAGE_FEATURE_LANDMARK_PATH:str = '/home/server-iss-mbkm/project/project_student_detection/student_detection_dataset/croped_object_landmark'
-FEATURE_EXTRACTION_CSV_PATH:str = '/home/server-iss-mbkm/project/project_student_detection/student_detection_dataset/csv_landmark'
+FEATURE_EXTRACTION_CSV_PATH:str = '/home/server-iss-mbkm/project/project_student_detection/student_detection_dataset/csv'
 OBJ_DATABASE_PATH:str = '/home/server-iss-mbkm/project/project_student_detection/student_detection_dataset/foto_wajah_nama_db'
 
 @dataclass

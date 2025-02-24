@@ -5,7 +5,7 @@ import cv2
 
 from src.logger import logging
 from src.exception import CustomException
-
+from src.components.config import data_config
 from ultralytics import YOLO 
 from IPython.display import display, Image
 from dataclasses import dataclass 
@@ -14,8 +14,8 @@ from dataclasses import dataclass
 @dataclass
 class ImageCropConfig():
 
-    image_data_path:str = '/home/server-iss-mbkm/project/project_student_detection_dataset/raw_object/test.jpg'
-    image_save_path:str = '/home/server-iss-mbkm/project/project_student_detection/student_detection_dataset/croped_object'
+    #image_data_path:str = '/home/server-iss-mbkm/project/project_student_detection_dataset/raw_object/test.jpg'
+    #image_save_path:str = '/home/server-iss-mbkm/project/project_student_detection/student_detection_dataset/croped_object'
 
     person_yolo_model = YOLO('yolov8n.pt') # Load a pretrained YOLOv8n model
     person_yolo_model.classes = [0] # 0 is the index for the 'person' class in YOLOv8
@@ -24,15 +24,16 @@ class ImageCropConfig():
 class ImageCrop():
     def __init__ (self):
         self.image_crop_config = ImageCropConfig()
+        self.data_config = data_config()
 
     def initiate_crop_image(self):
         "This Function is Responsible for cropping image"
         logging.info('Initiating Crop Object')
         try:
             
-            image = cv2.imread(self.image_crop_config.image_data_path)
+            image = cv2.imread(self.data_config.image_data_path)
             results = self.image_crop_config.person_yolo_model(image)
-            save_path = self.image_crop_config.image_save_path
+            save_path = self.data_config.image_save_path
 
             if not os.path.exists(save_path):
                 os.makedirs(save_path)

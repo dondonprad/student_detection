@@ -4,7 +4,7 @@ import numpy as np
 import math
 import cv2
 import mediapipe as mp
-
+from src.components.config import data_config
 from src.logger import logging
 from src.exception import CustomException
 from src.components.image_crop import ImageCropConfig
@@ -15,8 +15,8 @@ DESIRED_WIDTH = 480
 
 @dataclass
 class FeatureExtractionConfig():
-   image_nose_landmark_save_path:str = '/home/server-iss-mbkm/project/project_student_detection/student_detection_dataset/croped_object_landmark'
-   csv_pose_landmark_save_path:str = '/home/server-iss-mbkm/project/project_student_detection/student_detection_dataset/csv_landmark'
+   #image_nose_landmark_save_path:str = '/home/server-iss-mbkm/project/project_student_detection/student_detection_dataset/croped_object_landmark'
+   #csv_pose_landmark_save_path:str = '/home/server-iss-mbkm/project/project_student_detection/student_detection_dataset/csv_landmark'
    mp_pose = mp.solutions.pose
    mp_drawing = mp.solutions.drawing_utils 
    mp_drawing_styles = mp.solutions.drawing_styles
@@ -27,9 +27,10 @@ class FeatureExtraction():
     def __init__(self):
         self.feature_extraction_config = FeatureExtractionConfig()
         self.image_crop_config = ImageCropConfig()
+        self.data_config = data_config()
 
     def images_store(self)->dict: #store image to dictionary
-        file_dir = self.image_crop_config.image_save_path # Specify the directory containing your files
+        file_dir = self.data_config.database_path # Specify the directory containing your files
         file_list = [f for f in os.listdir(file_dir) if os.path.isfile(os.path.join(file_dir, f))] # Get a list of all files in the directory
         try:
             logging.info('store images to dictionary')
@@ -89,7 +90,7 @@ class FeatureExtraction():
                                                self.feature_extraction_config.mp_pose.POSE_CONNECTIONS,
                                                landmark_drawing_spec = self.feature_extraction_config.mp_drawing_styles.get_default_pose_landmarks_style())
                     
-                    save_dir = self.feature_extraction_config.image_nose_landmark_save_path
+                    save_dir = self.data_config.image_landmark_save_path
 
                     if not os.path.exists(save_dir):
                         os.makedirs(save_dir)
@@ -103,12 +104,12 @@ class FeatureExtraction():
            raise CustomException(e,sys)
         
     def csv_pose_landmark_data(self):
-        file_dir = self.image_crop_config.image_save_path # Specify the directory containing your files
+        file_dir = self.data_config.image_save_path # Specify the directory containing your files
         
 
 
 if __name__ == '__main__':
     obj = FeatureExtraction()
     res = obj.images_store()
-    land = obj.draw_get_nose_landmark(res)
-    print(land)
+    #land = obj.draw_get_nose_landmark(res)
+    print(res)
