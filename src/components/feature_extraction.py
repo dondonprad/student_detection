@@ -170,7 +170,7 @@ class ImageRepresentation():
             res_list = []
             nim_list = []
             threshold = verification.find_threshold(model_name=model_name, distance_metric="euclidean")
-            
+
             with open(db_representation, newline='') as file: 
                     reader = csv.reader(file, delimiter = ',') 
                     for row in reader:
@@ -181,9 +181,7 @@ class ImageRepresentation():
                 for k in data_list[1:]:
                     res = self.distance_calculation(j[1],eval(k))
                     res_list.append(res)
-
-            
-
+                    
             return res_list
 
         except Exception as e:
