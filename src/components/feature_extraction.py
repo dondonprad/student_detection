@@ -6,6 +6,7 @@ import math
 import cv2
 import mediapipe as mp
 from deepface import DeepFace
+from deepface.modules import verification
 from deepface.models.FacialRecognition import FacialRecognition
 from src.components.config import data_config
 from src.logger import logging
@@ -72,7 +73,7 @@ class FeatureExtraction(): #feature extraction for classification student condit
         #cv2.imshow(img)
 
 
-    def draw_get_nose_landmark(self, images:dict)->dict: #get landmark value then store at dict
+    def draw_get_nose_landmark(self, images:dict)->dict: #get landmark value then store on dict
         # Run MediaPipe Pose and draw pose landmarks.
         try:
             with self.feature_extraction_config.mp_pose.Pose(static_image_mode=True, min_detection_confidence=0.5, model_complexity=2) as pose:
@@ -125,7 +126,7 @@ class ImageRepresentation():
         self.save_csv = ImageRepresentationConfig.save_csv
         self.db_path = ImageRepresentationConfig.db_path
     
-    def database_representation(self): #create image representation then store to csv
+    def database_representation(self): #create image representation from database then store to csv
         csv_name = self.save_csv + 'representation_database.csv'
         file_dir = self.db_path# Specify the directory containing your files
         file_list = [f for f in os.listdir(file_dir) if os.path.isfile(os.path.join(file_dir, f))]
@@ -138,7 +139,7 @@ class ImageRepresentation():
                 writer.writerow(header)
 
                 for file in file_list:
-                    row = [f"'{os.path.splitext(file)[0]}'"] #remove jpg extension string
+                    row = [f'{os.path.splitext(file)[0]}'] #remove jpg extension string
                     obj = DeepFace.extract_faces(file_dir+file)
                     row.extend([list(np.array(model.forward(np.expand_dims(cv2.resize(obj[0]["face"],target_size), axis=0))))])
                     writer.writerow(row)
@@ -146,7 +147,7 @@ class ImageRepresentation():
         except Exception as e:
             raise CustomException(e, sys)    
         
-    def face_detection_representation(self, img)->dict:
+    def face_detection_representation(self, img)->dict: #read face detection data and store to dict
         try: 
             logging.info('detecting face on image')
             obj = DeepFace.extract_faces(img)
@@ -164,29 +165,44 @@ class ImageRepresentation():
             raise CustomException(e,sys)
         
 
-    def compare(self, img_representation:dict, db_representation:str):
+    def csv_representation(self, img_representation, db_representation:str)-> list: #read database representation CSV 
         try:
-            data_list = []
-            res_list = []
-            nim_list = []
-            threshold = verification.find_threshold(model_name=model_name, distance_metric="euclidean")
-
+            res = []
+            logging.info('load csv database then store to dict')
             with open(db_representation, newline='') as file: 
-                    reader = csv.reader(file, delimiter = ',') 
+                    reader = csv.DictReader(file) 
                     for row in reader:
-                        data_list.append(row[1])
-                        nim_list.append(row[0])
-
-            for i,j in img_representation.items():
-                for k in data_list[1:]:
-                    res = self.distance_calculation(j[1],eval(k))
-                    res_list.append(res)
-                    
-            return res_list
+                        res.append(self.distance_calculation(img_representation,np.array(eval(row['value']))))
+                        
+            return res
 
         except Exception as e:
             raise CustomException(e,sys)
+
+
+    def calculation_with_img(self, img_representation:dict, db_representation:str):
+        try:
+            res_list = []
+            nim = []
+            threshold = verification.find_threshold(model_name=model_name, distance_metric="euclidean")
+
+            with open(db_representation, newline='') as file: 
+                    reader = csv.DictReader(file) 
+                    for row in reader:
+                        nim.append(row['NIM'])
+
+
+            for i,j in img_representation.items():
+                res = self.csv_representation(j[1], db_representation)
+                img_representation[i].append(res)
+                res_list.append(res)
+
+            return img_representation, nim
         
+        except Exception as e:
+            raise CustomException(e,sys)
+            
+      
     def distance_calculation(self, img_representation, db_img_representation):
         try:
             logging.info('calculate distance using representation')
@@ -204,5 +220,6 @@ class ImageRepresentation():
 if __name__ == '__main__':
     obj = ImageRepresentation() #.database_representation()
     res= obj.face_detection_representation(ImageRepresentationConfig.obj)
-    comp = obj.compare(res, ImageRepresentationConfig.save_csv + 'representation_database.csv')
+    comp, nim = obj.calculation_with_img(res, ImageRepresentationConfig.save_csv + 'representation_database.csv')
     print(comp)
+    print(nim)
