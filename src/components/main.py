@@ -16,6 +16,7 @@ class ImageRecognation():
 
     def recognation(self, img_representation:dict, nim_list:list):
         try:
+            npm = []
             obj = img_representation
             ig = cv2.imread(ImageRepresentationConfig.obj)
             logging.info('Face Recognantion')
@@ -27,12 +28,13 @@ class ImageRecognation():
                 tmp = obj[str(i)][2]
                 idx = tmp.index(min(tmp))
                 cv2.putText(ig,nim[idx],(x,y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1)
-
+                npm.append(nim[idx])
 
             cv2.imshow('Cropped', ig)
             cv2.waitKey(0)
             cv2.destroyAllWindows() 
-
+            return npm
+        
         except Exception as e:
             raise CustomException(e,sys)
         
