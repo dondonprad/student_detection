@@ -10,4 +10,5 @@ ipython
 deepface
 tensorflow
 ipykernel
+flask_restful
 -e .

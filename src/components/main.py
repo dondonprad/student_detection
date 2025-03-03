@@ -1,24 +1,26 @@
-import os
 import sys
 import cv2
-import pandas as pd
+import base64
 import numpy as np
 from src.logger import logging
 from src.exception import CustomException
 from src.components.feature_extraction import ImageRepresentation, ImageRepresentationConfig
-from deepface import DeepFace
 from src.components.config import data_config
 
 
 class ImageRecognation():
-    def __init__(self):
-        pass #self.calculation = ImageRepresentation.calculation_with_img(self)
+    def uri_to_cv2(self, uri_input):
+        #encoded_data = uri.split(',')[1]
+        nparr = np.frombuffer(base64.b64decode(uri_input.split(',')[1], np.uint8))
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        return img
 
-    def recognation(self, img_representation:dict, nim_list:list):
+    def recognation(self, uri, img_representation:dict, nim_list:list, save_file:str):
         try:
             npm = []
             obj = img_representation
-            ig = cv2.imread(ImageRepresentationConfig.obj)
+            img = self.uri_to_cv2(uri)
+            ig = cv2.imread(img)
             logging.info('Face Recognantion')
             
             for i in range(len(obj)):
@@ -27,12 +29,12 @@ class ImageRecognation():
 
                 tmp = obj[str(i)][2]
                 idx = tmp.index(min(tmp))
-                cv2.putText(ig,nim[idx],(x,y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1)
-                npm.append(nim[idx])
+                cv2.putText(ig,nim_list[idx],(x,y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1)
+                npm.append(nim_list[idx])
 
-            cv2.imshow('Cropped', ig)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows() 
+            cv2.imwrite(save_file, ig)
+            #cv2.waitKey(0)
+            #cv2.destroyAllWindows() 
             return npm
         
         except Exception as e:
@@ -44,6 +46,6 @@ if __name__ == '__main__':
     test = ImageRecognation()
     res= obj.face_detection_representation(data_config.image_data_path)
     comp, nim = obj.calculation_with_img(res, data_config.csv_save_path + 'representation_database.csv')
-    res_2 = test.recognation(comp, nim)
+    res_2 = test.recognation(comp, nim, 'cropped')
 
 

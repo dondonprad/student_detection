@@ -7,6 +7,7 @@ IMAGE_SAVE_PATH:str = '/home/server-iss-mbkm/project/project_student_detection/s
 IMAGE_FEATURE_LANDMARK_PATH:str = '/home/server-iss-mbkm/project/project_student_detection/student_detection_dataset/croped_object_landmark'
 SAVE_CSV_PATH:str = '/home/server-iss-mbkm/project/project_student_detection/student_detection_dataset/csv/'
 OBJ_DATABASE_PATH:str = '/home/server-iss-mbkm/project/project_student_detection/student_detection_dataset/foto_wajah_nama_db/'
+DATABASE_CLASS:str = '/home/server-iss-mbkm/project/project_student_detection/student_detection_dataset/database/'
 
 @dataclass
 class data_config():
@@ -15,3 +16,4 @@ class data_config():
     image_landmark_save_path:str = IMAGE_FEATURE_LANDMARK_PATH
     csv_save_path:str = SAVE_CSV_PATH
     database_path:str = OBJ_DATABASE_PATH
+    database_class:str = DATABASE_CLASS
