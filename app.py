@@ -1,5 +1,6 @@
 import os
 import sys
+from PIL import Image
 from datetime import datetime
 from flask import Flask, request, jsonify
 from flask_restful import Resource, Api
@@ -8,19 +9,24 @@ from src.exception import CustomException
 from src.components.config import data_config #data_source config 
 from src.components.feature_extraction import ImageRepresentation
 from src.components.main import ImageRecognation
-
+from src.components.decode import DecodeImg
 
 app = Flask(__name__)
 
-
 @app.route('/face_verification', methods=['POST'])
-def post_example():
+def process():
     try:
         logging.info('Create API for face detection and save file')
 
         input_data = request.get_json()
         param1 = input_data['image']
-        #img = f"data:image/.jpg;base64,{param1}"
+        image = f"data:image/.jpg;base64,{param1}"
+        
+        #Image Processing
+        obj = DecodeImg()
+        res = obj.decode_img(image)
+
+        #Create Folder Processing
         param2 = input_data['class_id']
         save_path = data_config.database_class + param2
         time = datetime.now().strftime("%Y-%m-%d %H-%M-%S")
@@ -31,9 +37,9 @@ def post_example():
 
         obj_representation = ImageRepresentation()
         obj_recognation = ImageRecognation()
-        res_representation = obj_representation.face_detection_representation(param1)
+        res_representation = obj_representation.face_detection_representation(image)
         comp, nim = obj_representation.calculation_with_img(res_representation, data_config.csv_save_path + 'representation_database.csv')
-        res_recognantion = obj_recognation.recognation(param1, comp, nim, save_name)
+        res_recognantion = obj_recognation.recognation(res, comp, nim, save_name)
 
         response_data = {
             'NIM':res_recognantion

@@ -151,7 +151,7 @@ class ImageRepresentation():
         try: 
             logging.info('detecting face on image')
             obj = DeepFace.extract_faces(img)
-            ig = cv2.imread(img)
+            #ig = cv2.imread(img)
             face_representation = {}
 
             for i in range(len(obj)):
